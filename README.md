@@ -4,7 +4,7 @@ Small collection of helper scripts I use regularly. Configure them via `.env` an
 
 ## Setup
 - Copy `.env.example` to `.env` and fill in values.
-- Make scripts executable: `chmod +x Zoom.sh work.sh`.
+- Make scripts executable: `chmod +x Zoom.sh work.sh vpn.sh`.
 - macOS is assumed (uses `open` and the Zoom URL scheme). Linux users can adapt the `open` calls.
 
 ## Environment Variables
@@ -15,6 +15,8 @@ Small collection of helper scripts I use regularly. Configure them via `.env` an
 - LOGIN_URL: URL that `work.sh` opens in Chrome (e.g., a login page).
 - QDRANT_NAME: Docker container name that `work.sh` ensures is running (Qdrant DB).
 - DOCKER_STARTUP_TIMEOUT: Seconds to wait for Docker Desktop to become ready (default 120).
+- VPN_CONFIG_NAME: Tunnelblick configuration name controlled by `vpn.sh`.
+- VPN_SUBCOMMAND: Optional default action for `vpn.sh` (`toggle` | `on` | `off` | `status` | `watch`).
 
 See `.env.example` for comments and sample values.
 
@@ -39,6 +41,18 @@ See `.env.example` for comments and sample values.
   - Changes into `"$PROJECT_DIR/$APP_SUBDIR"` and runs `api/main.py` using `.venv/bin/python`, `venv/bin/python`, or `python3`.
 - Requirements: VS Code, Google Chrome, Docker, Python 3, your app at `api/main.py`.
 - Notes: If no container exists, it pulls/runs `qdrant/qdrant:latest` mapped to port 6333.
+
+### vpn.sh
+- Purpose: Quick control of a Tunnelblick VPN for work/Zoom connectivity.
+- Usage: `./vpn.sh [VPN_CONFIG_NAME] [command]`
+  - `command` can be: `toggle` (default), `on`, `off`, `status`, `watch`, `help`.
+  - If `VPN_CONFIG_NAME` is omitted, the script uses the value from `.env` or auto-detects if only one config exists.
+- Behavior: Uses AppleScript to talk to Tunnelblick, waits for state changes, and can tail relevant logs.
+- Requirements: Tunnelblick installed on macOS with a configuration matching `VPN_CONFIG_NAME`.
+- Examples:
+  - `./vpn.sh`                → toggle the VPN defined in `.env`.
+  - `./vpn.sh status`         → print current state for the `.env`/auto-detected config.
+  - `./vpn.sh "My Config" on` → connect a specific configuration.
 
 ## Troubleshooting
 - VS Code not opening: Install the `code` command or ensure the VS Code app is present.
